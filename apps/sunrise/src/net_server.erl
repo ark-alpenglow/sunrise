@@ -17,7 +17,7 @@ init(Socket) ->
 handle_cast(accept, State=#state{socket=ListenSocket}) ->
     {ok, AcceptSocket} = gen_tcp:accept(ListenSocket),
     net_sup:start_socket(),
-    send(AcceptSocket, "Hello", []),
+    send(AcceptSocket, "Welcome to sunrise v0.1", []),
     {noreply, State#state{socket=AcceptSocket}};
 handle_cast(_, State) ->
     io:format("Received unknown message.~n"),
@@ -26,8 +26,12 @@ handle_cast(_, State) ->
 handle_info({tcp, Socket, "quit"++_}, State) ->
     gen_tcp:close(Socket),
     {stop, normal, State};
-handle_info({tcp, Socket, Msg}, State) ->
-    io:format("server received ~s~n", [Msg]),
+handle_info({tcp, Sender, Msg}, State) ->
+    io:format("[~p] ~s", [Sender, Msg]),
+    net_sup:send_all({message, self(), io_lib:format("~p sent: ~s", [Sender, Msg])}),
+    send(Sender, io_lib:format("You sent: ~s", [Msg]), []),
+    {noreply, State};
+handle_info({send_from_server, Msg}, State=#state{socket=Socket}) ->
     send(Socket, Msg, []),
     {noreply, State};
 handle_info({tcp_closed, _Socket}, State) ->

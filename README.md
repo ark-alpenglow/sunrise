@@ -11,11 +11,14 @@
 ### Ready
 
 ### TODO
-
-#### Phase 1
 - raw mode telnet server
 - a message can be broadcast to all players
+-- `net_sup:send_all({message, self(), Msg}).`
 - a message can be sent to a specified player
+-- `Pid ! {send_from_server, Msg}.`
+
+#### Phase 1
+- a player can list connected players
 - players can register an account
 - players can login with username and password
 - players can create a character after logging in
