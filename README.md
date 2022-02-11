@@ -12,17 +12,17 @@
 
 ### TODO
 - raw mode telnet server
-- a message can be broadcast to all players
+- a message can be broadcast to all users
 -- `net_sup:send_all({message, self(), Msg}).`
-- a message can be sent to a specified player
+- a message can be sent to a specified user
 -- `Pid ! {send_from_server, Msg}.`
-- a player can list connected players
+- a user can list connected users
 
 #### Phase 1
-- players can register an account
-- players can login with username and password
-- players can create a character after logging in
-- players can select one of their characters after logging in
+- users can register an account
+- users can login with username and password
+- users can create a character after logging in
+- users can select one of their characters after logging in
 - characters enter the world in a configurable starting room
 - rooms have descriptions
 - rooms have configurable and describable exits
@@ -40,7 +40,7 @@
 - skills can cause body systems to become degraded, impaired, and destroyed
 
 #### Phase 3
-- npc's are a type of character controlled by an AI instead of a player
+- npc's are a type of character controlled by an AI instead of a user
 - npc's have all the capabilities of characters but follow behavioural state machines
 - some npc's are peaceful
 - some npc's are hostile
@@ -67,4 +67,4 @@
 
 #### Phase 6
 - a dynamically-generated map of the world can be viewed on the web
-- players can view their characters' stats, skills, body systems, and items on the web
+- users can view their characters' stats, skills, body systems, and items on the web

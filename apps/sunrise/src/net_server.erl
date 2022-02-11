@@ -53,6 +53,9 @@ send(Socket, Str, Args) ->
     %ok = inet:setopts(Socket, [{active, once}]),
     ok.
 
+process_message(<<"register", " ", UserAndPass/binary>>, Sender, _State) ->
+    [User|Password] = binary:split(UserAndPass, <<" ">>),
+    user_server:register_user(Sender, User, hd(Password));
 process_message(<<"broadcast", " ", Msg/binary>>, Sender, _State) ->
     io:format("[~p Broadcast] ~s", [Sender, Msg]),
     net_sup:send_all({message, self(), io_lib:format("~p broadcast: ~s", [Sender, Msg])});
