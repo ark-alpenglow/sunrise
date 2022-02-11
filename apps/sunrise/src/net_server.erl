@@ -58,7 +58,9 @@ process_message(<<"broadcast", " ", Msg/binary>>, Sender, _State) ->
     net_sup:send_all({message, self(), io_lib:format("~p broadcast: ~s", [Sender, Msg])});
 process_message(<<"who\r\n">>, Sender, _State=#state{socket=Socket}) ->
     io:format("[~p who]", [Sender]),
-    send(Socket, "[]", []);
+    Connections = net_sup:all_connections(),
+    Msg = string:join([io_lib:format("Cnn: ~p", [Pid]) || {Pid, _Port} <- Connections], "~n"),
+    send(Socket, Msg, []);
 process_message(Msg, Sender, _State) ->
     send(Sender, "Unknown command: ~p", [Msg]).
 

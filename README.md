@@ -16,9 +16,9 @@
 -- `net_sup:send_all({message, self(), Msg}).`
 - a message can be sent to a specified player
 -- `Pid ! {send_from_server, Msg}.`
+- a player can list connected players
 
 #### Phase 1
-- a player can list connected players
 - players can register an account
 - players can login with username and password
 - players can create a character after logging in
