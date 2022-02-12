@@ -39,9 +39,15 @@ init([]) ->
         {user_server, start_link, [[]]},
         permanent, brutal_kill, worker, [user_server]
     },
+    CharacterServerSpec = {
+        character_server,
+        {character_server, start_link, [[]]},
+        permanent, brutal_kill, worker, [character_server]
+    },
     ChildSpecs = [
         NetSupSpec,
-        UserServerSpec
+        UserServerSpec,
+        CharacterServerSpec
     ],
     {ok, {SupFlags, ChildSpecs}}.
 

@@ -1,7 +1,7 @@
 -module(user_server).
 -behaviour(gen_server).
 
--export([register_user/3, validate_user/2, all_users/0, connected_users/0, login/2, is_logged_in/1]).
+-export([register_user/3, validate_user/2, all_users/0, connected_users/0, login/2, is_logged_in/1, name_by_pid/1]).
 -export([start_link/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, code_change/3, terminate/2]).
 
@@ -42,6 +42,13 @@ is_logged_in(Pid) ->
         [] -> false;
         [{Pid, _}] -> true;
         _ -> unknown
+    end.
+
+name_by_pid(Pid) ->
+    case ets:lookup(users_by_pid, Pid) of
+        [] -> undefined;
+        [{Pid, User}] -> {ok, User};
+        _ -> undefined
     end.
 
 start_link(_) ->

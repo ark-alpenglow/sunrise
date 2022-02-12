@@ -19,12 +19,12 @@
 - users can register an account
     - registered accounts are persisted through server restart
 - users can login with username and password
+- users can create a character after logging in
+- users can select one of their characters after logging in
 
 ### TODO
 
 #### Phase 1
-- users can create a character after logging in
-- users can select one of their characters after logging in
 - characters enter the world in a configurable starting room
 - rooms have descriptions
 - rooms have configurable and describable exits
