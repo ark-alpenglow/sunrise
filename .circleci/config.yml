@@ -23,3 +23,6 @@ jobs:
     steps:
       - checkout
       - run: rebar3 release
+      - store_artifacts:
+        path: _build/default/rel/sunrise
+        destination: sunrise-release
