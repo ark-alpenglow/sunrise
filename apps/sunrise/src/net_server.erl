@@ -53,16 +53,32 @@ send(Socket, Str, Args) ->
     %ok = inet:setopts(Socket, [{active, once}]),
     ok.
 
+
+process_message(<<"login", " ", UserAndPass/binary>>, Sender, _State) ->
+    [User|Password] = binary:split(UserAndPass, <<" ">>),
+    case user_server:login(User, hd(Password)) of
+        baduser ->send(Sender, "Invalid username.", []);
+        badpass -> send(Sender, "Bad password.", []);
+        ok -> 
+            send(Sender, "Logged in.", []),
+            send(Sender, "Enter the world with `use <character>`", []),
+            send(Sender, "Characters available: []", [])
+    end;
 process_message(<<"register", " ", UserAndPass/binary>>, Sender, _State) ->
     [User|Password] = binary:split(UserAndPass, <<" ">>),
-    user_server:register_user(Sender, User, hd(Password));
+    case user_server:register_user(Sender, User, hd(Password)) of
+        userexists -> send(Sender, "User already exists.", []); 
+        ok -> 
+            send(Sender, "Registered successsfully.", []),
+            send(Sender, "Create a character with `create <name>`", [])
+    end;
 process_message(<<"broadcast", " ", Msg/binary>>, Sender, _State) ->
     io:format("[~p Broadcast] ~s", [Sender, Msg]),
     net_sup:send_all({message, self(), io_lib:format("~p broadcast: ~s", [Sender, Msg])});
 process_message(<<"who\r\n">>, Sender, _State=#state{socket=Socket}) ->
-    io:format("[~p who]", [Sender]),
-    Connections = net_sup:all_connections(),
-    Msg = string:join([io_lib:format("Cnn: ~p", [Pid]) || {Pid, _Port} <- Connections], "~n"),
+    io:format("[~p who]~n", [Sender]),
+    Users = user_server:connected_users(),
+    Msg = string:join([io_lib:format("Name: ~p", [U]) || {_, U} <- Users], "~n"),
     send(Socket, Msg, []);
 process_message(Msg, Sender, _State) ->
     send(Sender, "Unknown command: ~p", [Msg]).

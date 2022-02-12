@@ -8,19 +8,21 @@
 
 ## Features
 
-### Ready
+### Implemented
 
-### TODO
 - raw mode telnet server
 - a message can be broadcast to all users
 -- `net_sup:send_all({message, self(), Msg}).`
 - a message can be sent to a specified user
 -- `Pid ! {send_from_server, Msg}.`
 - a user can list connected users
+- users can register an account
+    - registered accounts are persisted through server restart
+- users can login with username and password
+
+### TODO
 
 #### Phase 1
-- users can register an account
-- users can login with username and password
 - users can create a character after logging in
 - users can select one of their characters after logging in
 - characters enter the world in a configurable starting room
