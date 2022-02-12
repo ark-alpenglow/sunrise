@@ -9,7 +9,8 @@ start_link() ->
 
 init(_) ->
     ets:new(connections, [public, named_table]),
-    {ok, ListenSocket} = gen_tcp:listen(5000, [binary, {reuseaddr, true}]),
+    {ok, Port} = application:get_env(sunrise, tcp_port),
+    {ok, ListenSocket} = gen_tcp:listen(Port, [binary, {reuseaddr, true}]),
     spawn_link(fun empty_listeners/0),
     {ok, 
         { 

@@ -89,7 +89,7 @@ process_message(<<"login", " ", UserAndPass/binary>>, Sender, _State) ->
     end;
 process_message(<<"register", " ", UserAndPass/binary>>, Sender, _State) ->
     [User|Password] = binary:split(UserAndPass, <<" ">>),
-    case user_server:register_user(Sender, User, hd(Password)) of
+    case user_server:register_user(self(), User, hd(Password)) of
         userexists -> send(Sender, "User already exists.", []); 
         ok -> 
             send(Sender, "Registered successsfully.", []),

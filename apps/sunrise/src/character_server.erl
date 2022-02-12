@@ -40,7 +40,8 @@ start_link(_) ->
 init(_) ->
     ets:new(characters, [public, named_table]),
     ets:new(characters_by_pid, [public, named_table]),
-    dets:open_file(characters, [{file, "characters.data"}]),
+    {ok, Path} = application:get_env(sunrise, data_path),
+dets:open_file(characters, [{file, io_lib:format("~s/characters.data", [Path])}]),
     dets:to_ets(characters, characters),
     {ok, {}}.
 

@@ -18,6 +18,7 @@ register_user(Sender, Username, Password) ->
             ets:insert(users, {CleanUsername, CleanPassword}),
             dets:insert(users, {CleanUsername, CleanPassword}),
             ets:insert(users_by_pid, {Sender, CleanUsername}),
+            login(Username, Password),
             ok
     end.
 
@@ -57,7 +58,8 @@ start_link(_) ->
 init(_) ->
     ets:new(users, [public, named_table]),
     ets:new(users_by_pid, [public, named_table]),
-    dets:open_file(users, [{file, "users.data"}]),
+    {ok, Path} = application:get_env(sunrise, data_path),
+    dets:open_file(users, [{file, io_lib:format("~s/users.data", [Path])}]),
     dets:to_ets(users, users),
     {ok, {}}.
 
