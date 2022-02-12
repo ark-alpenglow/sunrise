@@ -23,6 +23,6 @@ jobs:
     steps:
       - checkout
       - run: rebar3 release
+      - run: tar -czvf sunrise.tgz _build/default/rel/sunrise
       - store_artifacts:
-          path: _build/default/rel/sunrise
-          destination: sunrise-release
+          path: sunrise.tgz
