@@ -6,6 +6,11 @@
 ## Release
 `$ rebar3 release`
 
+## Run
+`$ rebar3 shell`
+
+Listens for telnet connections on port 5000.
+
 ## Features
 
 ### Implemented
@@ -25,6 +30,7 @@
 ### TODO
 
 #### Phase 1
+- configuration management
 - characters enter the world in a configurable starting room
 - rooms have descriptions
 - rooms have configurable and describable exits
@@ -70,3 +76,16 @@
 #### Phase 6
 - a dynamically-generated map of the world can be viewed on the web
 - users can view their characters' stats, skills, body systems, and items on the web
+
+#### Phase 7
+- Web-accessible game client
+
+#### Phase 8
+- Improved advancement system
+
+#### Phase 9
+- Improved test suite
+- Balance, refactor, hardening
+
+#### Phase 10
+- Polish 
