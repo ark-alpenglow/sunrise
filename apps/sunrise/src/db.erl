@@ -4,8 +4,11 @@
 
 start(mem, Name, Options) ->
     ets:new(Name, Options).
-start(disk, Name, _, Path) ->
-    dets:open_file(Name, [{file, io_lib:format("~s/~s.data", [Path, Name])}]);
+start(disk, Name, Options, Path) ->
+    Options2 = lists:delete(public, Options),
+    Options3 = lists:delete(named_table, Options2),
+    Args = [{file, io_lib:format("~s/~s.data", [Path, Name])}|Options3],
+    dets:open_file(Name, Args);
 start(both, Name, Options, Path) ->
     start(mem, Name, Options),
     start(disk, Name, Options, Path),
@@ -14,7 +17,8 @@ start(both, Name, Options, Path) ->
 insert(mem, Table, Fields) ->
     ets:insert(Table, Fields);
 insert(disk, Table, Fields) ->
-    dets:insert(Table, Fields);
+    dets:insert(Table, Fields),
+    dets:sync(Table);
 insert(save, Table, Fields) -> 
     insert(mem, Table, Fields),
     insert(disk, Table, Fields).

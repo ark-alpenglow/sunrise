@@ -19,8 +19,8 @@ create_test() ->
     character_server:create(none, <<"user">>, <<"name">>),
     meck:validate(db),
     meck:validate(stats_server),
-    meck:reset(db),
-    meck:reset(stats_server).
+    meck:unload(db),
+    meck:unload(stats_server).
 
 create_already_exists_test() ->
     meck:expect(db, lookup, fun
@@ -34,7 +34,9 @@ create_already_exists_test() ->
     ?assertEqual(0, meck:num_calls(db, insert, '_')),
     ?assertEqual(1, meck:num_calls(db, lookup, '_')),
     meck:validate(db),
-    meck:reset(db).
+    meck:validate(stats_server),
+    meck:unload(db),
+    meck:unload(stats_server).
 
 %enter_does_nothing_if_character_does_not_exist_test() ->
 %    % if doesn't exist returns false
@@ -44,8 +46,8 @@ create_already_exists_test() ->
 %    ?assertEqual(false, character_server:enter(none, <<"user">>, <<"name">>)),
 %    ?assertEqual(0, meck:num_calls(db, insert, '_')),
 %    meck:validate(character_server),
-%    meck:reset(character_server),
-%    meck:reset(db).
+%    meck:unload(character_server),
+%    meck:unload(db).
 
 enter_test() ->
     % saves pid to memory db
@@ -58,8 +60,8 @@ enter_test() ->
 
     ?assertEqual(1, meck:num_calls(db, insert, '_')),
     ?assertEqual(1, meck:num_calls(room_server, enter, '_')),
-    meck:reset(db),
-    meck:reset(room_server).
+    meck:unload(db),
+    meck:unload(room_server).
 
 move_to_test() ->
     % updates in-memory character location
@@ -69,6 +71,6 @@ move_to_test() ->
     character_server:move_to(character, pid, room),
     ?assertEqual(1, meck:num_calls(db, update, '_')),
     ?assertEqual(1, meck:num_calls(room_server, enter, '_')),
-    meck:reset(db),
-    meck:reset(room_server).
+    meck:unload(db),
+    meck:unload(room_server).
 

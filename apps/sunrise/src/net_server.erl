@@ -126,6 +126,29 @@ process_message(<<"go", " ", Direction/binary>>, Sender, State=#state{socket=Soc
             process_message(<<"look">>, Sender, State);
         _ -> send(Socket, "Unknown direction", [])
     end;
+process_message(<<"stats">>, Sender, #state{socket=Socket}) ->
+    io:format("[~p stats]~n", [Sender]),
+    Char = character_server:character_by_pid(self()),
+    Stats = stats_server:all(Char),
+    Stats2 = [io_lib:format("~p: ~p/~p~n", [X, Y, Z]) || [X, Y, Z] <- Stats],
+    send(Socket, string:join(Stats2, ""));
+process_message(<<"check", " ", Stat/binary>>, _, #state{socket=Socket}) ->
+    Char = character_server:character_by_pid(self()),
+    Result = character_server:check_stat_easy(Char, binary_to_atom(Stat)),
+    send(Socket, io_lib:format("~p~n", [Result]));
+process_message(<<"hit", " ", Target/binary>>, _, #state{socket=Socket}) ->
+    Char = character_server:character_by_pid(self()),
+    Result = character_server:use_skill(Char, hit, Target),
+    send(Socket, io_lib:format("~p~n", [Result]));
+process_message(<<"do", " ", Skill/binary>>, _, #state{socket=Socket}) ->
+    Char = character_server:character_by_pid(self()),
+    Result = character_server:use_skill(Char, binary_to_atom(Skill)),
+    send(Socket, io_lib:format("~p~n", [Result]));
+process_message(<<"useon", " ", SkillAndTarget/binary>>, _, #state{socket=Socket}) ->
+    [Skill|[Target]] = binary:split(SkillAndTarget, <<" ">>),
+    Char = character_server:character_by_pid(self()),
+    Result = character_server:use_skill(Char, binary_to_atom(Skill), Target),
+    send(Socket, io_lib:format("~p~n", [Result]));
 process_message(Msg, Sender, _State) ->
     send(Sender, "Unknown command: ~p", [Msg]).
 

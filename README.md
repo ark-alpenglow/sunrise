@@ -38,26 +38,29 @@ Listens for telnet connections on port 5000.
 #### Phase 1.5 - Reliability
 - unit tests for existing features (future new work requires unit tests)
 
-### TODO
-
 #### Phase 2 - characters
 - characters have stats
-- characters have skills then can activate, with success and impact based on their stats
-- characters can make basic skill checks
-- characters have body systems (instead of numerical health)
+- characters have body systems instead of numerical health
 - body systems can be healthy, degraded, impaired, or destroyed
 - some body systems are core, others are peripheral
+- characters can make basic stat checks
+- skills can be targeted or untargeted
+- characters have skills they can activate, with success and impact based on their stat
 - degraded, impaired, or destroyed body systems reduce the success and impact of character skills
+- target skills can reduce success chance of attacker's skills
 - skills can cause body systems to become degraded, impaired, and destroyed
-
 
 #### Phase 3 - NPCs
 - npc's are a type of character controlled by an AI instead of a user
+
+### TODO
+
+#### Phase 3 - NPCs
 - npc's have all the capabilities of characters but follow behavioural state machines
-- some npc's are peaceful
-- some npc's are hostile
 - npc's can move based on their state machine
 - npc's can use skills based on their state machine
+- some npc's are peaceful
+- some npc's are hostile
 
 #### Phase 4 - items / inventory / shopping
 - characters can have 0+ coins to use as money
