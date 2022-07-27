@@ -17,7 +17,7 @@ init(Socket) ->
 handle_cast(accept, State=#state{socket=ListenSocket}) ->
     {ok, AcceptSocket} = gen_tcp:accept(ListenSocket),
     net_sup:start_socket(),
-    ets:insert(connections, {self(), AcceptSocket}),
+    db:insert(connections, {self(), AcceptSocket}),
     io:format("[~p] Connected on pid ~p~n", [AcceptSocket, self()]),
     send(AcceptSocket, "Welcome to sunrise v0.1", []),
     {noreply, State#state{socket=AcceptSocket}};
@@ -36,10 +36,10 @@ handle_info({send_from_server, Msg}, State=#state{socket=Socket}) ->
     send(Socket, Msg, []),
     {noreply, State};
 handle_info({tcp_closed, _Socket}, State) ->
-    ets:delete(connections, self()),
+    db:delete(connections, self()),
     {stop, normal, State};
 handle_info({tcp_error, _Socket, _}, State) ->
-    ets:delete(connections, self()),
+    db:delete(connections, self()),
     {stop, normal, State};
 handle_info(E, State) ->
     io:fwrite("unexpected: ~p~n", [E]),
@@ -100,9 +100,32 @@ process_message(<<"broadcast", " ", Msg/binary>>, Sender, _State) ->
     net_sup:send_all({message, self(), io_lib:format("~p broadcast: ~s", [Sender, Msg])});
 process_message(<<"who">>, Sender, _State=#state{socket=Socket}) ->
     io:format("[~p who]~n", [Sender]),
-    Users = user_server:connected_users(),
-    Msg = string:join([io_lib:format("Name: ~p", [U]) || {_, U} <- Users], "~n"),
+    Chars = character_server:characters_in_world(),
+    Msg = string:join([io_lib:format("Name: ~s", [C]) || C <- Chars], "~n"),
     send(Socket, Msg, []);
+process_message(<<"look">>, Sender, _State=#state{socket=Socket}) ->
+    case user_server:name_by_pid(self()) of
+        undefined -> send(Sender, "You must log in first.", []);
+        {ok, _} ->
+            io:format("[~p look]~n", [Sender]),
+            Loc = character_server:character_location_by_pid(self()),
+            {ok, Desc} = room_server:describe(Loc),
+            {ok, Exits} = room_server:exits(Loc),
+            ExitDescs = [D || {_, D, _, _, _} <- Exits],
+            Msg = io_lib:format("~s~nExits: ~p~n", [Desc, ExitDescs]),
+            send(Socket, Msg, [])
+    end;
+process_message(<<"go", " ", Direction/binary>>, Sender, State=#state{socket=Socket}) ->
+    io:format("[~p go]~n", [Sender]),
+    Char = character_server:character_by_pid(self()),
+    Loc = character_server:character_location_by_pid(self()),
+    {ok, Exits} = room_server:exits(Loc),
+    case [E || {_, E, _, _, _} <- Exits, Direction==atom_to_binary(E)] of
+        [Exit] ->
+            room_server:traverse(self(), Char, Loc, Exit),
+            process_message(<<"look">>, Sender, State);
+        _ -> send(Socket, "Unknown direction", [])
+    end;
 process_message(Msg, Sender, _State) ->
     send(Sender, "Unknown command: ~p", [Msg]).
 

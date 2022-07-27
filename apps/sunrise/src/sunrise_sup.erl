@@ -44,10 +44,22 @@ init([]) ->
         {character_server, start_link, [[]]},
         permanent, brutal_kill, worker, [character_server]
     },
+    RoomServerSpec = {
+        room_server,
+        {room_server, start_link, [[]]},
+        permanent, brutal_kill, worker, [room_server]
+    },
+    StatsServerSpec = {
+        stats_server,
+        {stats_server, start_link, [[]]},
+        permanent, brutal_kill, worker, [stats_server]
+    },
     ChildSpecs = [
         NetSupSpec,
         UserServerSpec,
-        CharacterServerSpec
+        CharacterServerSpec,
+        RoomServerSpec,
+        StatsServerSpec
     ],
     {ok, {SupFlags, ChildSpecs}}.
 
